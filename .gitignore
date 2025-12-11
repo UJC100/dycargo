@@ -1,0 +1,27 @@
+# Root ignores
+node_modules/
+dist/
+build/
+.env
+.env.*.local
+*.log
+.DS_Store
+
+# Frontend ignores
+client-dycargo/node_modules/
+client-dycargo/.next/
+client-dycargo/out/
+client-dycargo/.env.local
+client-dycargo/.env.development.local
+client-dycargo/.env.production.local
+
+# Backend ignores
+dycargo-server/node_modules/
+dycargo-server/dist/
+dycargo-server/.env
+dycargo-server/.env.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp

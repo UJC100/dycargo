@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String     @id @default(uuid())
+  email     String     @unique
+  password  String
+  role      Role       @default(USER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  shipments Shipment[]
+}
+
+
+model Batch {
+  id           String      @id @default(uuid())
+  name         String      // e.g., "Week 1"
+  flightNumber String?     // Assigned once flight is confirmed
+  departureDate DateTime?
+  createdAt    DateTime    @default(now())
+  
+  shipments    Shipment[]  // One-to-many relation
+}
+
+model Shipment {
+  id               String      @id @default(uuid())
+  batchId          String
+  batch            Batch       @relation(fields: [batchId], references: [id])
+
+  userId           String
+  user             User        @relation(fields: [userId], references: [id])
+  
+  senderName       String
+  senderEmail      String
+  receiverName     String
+  receiverEmail    String
+  receiverPhone    String?
+  description      String?
+  
+  trackingNumber   String?     @unique // Nullable until generated
+  currentStatus    String?     // e.g., Pending, In Transit, Delivered
+  currentLat       Float?      // For map view
+  currentLng       Float?
+  
+  createdAt        DateTime    @default(now())
+  statusLogs       StatusLog[]
+}
+
+model StatusLog {
+  id         String   @id @default(uuid())
+  shipmentId String
+  status     String
+  message    String?
+  createdAt  DateTime @default(now())
+  shipment   Shipment @relation(fields: [shipmentId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  USER
+}

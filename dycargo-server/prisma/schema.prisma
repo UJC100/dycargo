@@ -31,10 +31,10 @@ model Batch {
 model Shipment {
   id               String      @id @default(uuid())
   batchId          String
-  batch            Batch       @relation(fields: [batchId], references: [id])
+  batch            Batch       @relation(fields: [batchId], references: [id], onDelete: Cascade)
 
   userId           String
-  user             User        @relation(fields: [userId], references: [id])
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   senderName       String
   senderEmail      String
@@ -44,7 +44,7 @@ model Shipment {
   description      String?
   
   trackingNumber   String?     @unique // Nullable until generated
-  currentStatus    String?     // e.g., Pending, In Transit, Delivered
+  currentStatus    Status      @default(PENDING)     // e.g., Pending, In Transit, Delivered
   currentLat       Float?      // For map view
   currentLng       Float?
   
@@ -64,4 +64,12 @@ model StatusLog {
 enum Role {
   ADMIN
   USER
+}
+
+ enum Status {
+  PENDING
+  IN_TRANSIT
+  DELIVERED
+  FAILED
+  RETURNED
 }

@@ -1,6 +1,5 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -19,13 +18,15 @@ model User {
 
 
 model Batch {
-  id           String      @id @default(uuid())
-  name         String      // e.g., "Week 1"
-  flightNumber String?     // Assigned once flight is confirmed
-  departureDate DateTime?
-  createdAt    DateTime    @default(now())
-  
-  shipments    Shipment[]  // One-to-many relation
+  id              String     @id @default(uuid())
+  batchCode       String     @unique
+  flightNumber    String?
+  departureDate   DateTime?
+  status          BatchStatus @default(PENDING)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  shipments       Shipment[]
 }
 
 model Shipment {
@@ -72,4 +73,11 @@ enum Role {
   DELIVERED
   FAILED
   RETURNED
+}
+
+enum BatchStatus {
+  PENDING      // created but no flight yet
+  READY        // flight assigned, tracking generated
+  IN_TRANSIT
+  DELIVERED
 }

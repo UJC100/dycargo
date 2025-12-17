@@ -13,7 +13,6 @@ model User {
   role      Role       @default(USER)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  shipments Shipment[]
 }
 
 
@@ -21,7 +20,7 @@ model Batch {
   id              String     @id @default(uuid())
   batchCode       String     @unique
   flightNumber    String?
-  departureDate   DateTime?
+  batchName       String
   status          BatchStatus @default(PENDING)
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
@@ -30,28 +29,34 @@ model Batch {
 }
 
 model Shipment {
-  id               String      @id @default(uuid())
-  batchId          String
-  batch            Batch       @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  id             String   @id @default(uuid())
 
-  userId           String
-  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  senderName       String
-  senderEmail      String
-  receiverName     String
-  receiverEmail    String
-  receiverPhone    String?
-  description      String?
-  
-  trackingNumber   String?     @unique // Nullable until generated
-  currentStatus    Status      @default(PENDING)     // e.g., Pending, In Transit, Delivered
-  currentLat       Float?      // For map view
-  currentLng       Float?
-  
-  createdAt        DateTime    @default(now())
-  statusLogs       StatusLog[]
+  batchId        String
+  batch          Batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  senderName     String
+  senderEmail    String
+
+  receiverName   String
+  receiverEmail  String
+  receiverPhone  String?
+  description    String?
+
+  trackingNumber String?  @unique
+  currentStatus  Status   @default(PENDING)
+
+  currentLat     Float?
+  currentLng     Float?
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  statusLogs     StatusLog[]
+
+  @@index([trackingNumber])
+  @@index([batchId])
 }
+
 
 model StatusLog {
   id         String   @id @default(uuid())

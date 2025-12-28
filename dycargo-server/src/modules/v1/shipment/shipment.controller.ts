@@ -1,9 +1,6 @@
-import { Body, Controller, Get, Param, Post, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ShipmentService } from './shipment.service';
-import {
-  CreateShipmentDto,
-  UpdateShipmentLocationDto,
-} from './dto/shipment.dto';
+import { CreateShipmentDto } from './dto/shipment.dto';
 
 @Controller('shipments')
 export class ShipmentController {
@@ -33,13 +30,5 @@ export class ShipmentController {
   @Get('batch/:batchId')
   async getShipmentsByBatch(@Param('batchId') batchId: string) {
     return this.shipmentService.getShipmentsByBatch(batchId);
-  }
-
-  @Patch(':shipmentId/location')
-  async updateShipmentLocation(
-    @Param('shipmentId') shipmentId: string,
-    @Body() dto: UpdateShipmentLocationDto,
-  ) {
-    return this.shipmentService.updateShipmentLocation(shipmentId, dto);
   }
 }

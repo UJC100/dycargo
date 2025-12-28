@@ -1,5 +1,4 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { BatchStatus } from '@prisma/client';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateBatchDto {
   @IsString()
@@ -12,6 +11,11 @@ export class UpdateBatchDto {
   flightNumber?: string;
 
   @IsOptional()
-  @IsEnum(BatchStatus)
-  status?: BatchStatus;
+  @IsString()
+  airline?: string;
+}
+
+export class UpdateTrackingNumberDto {
+  @IsString()
+  batchId: string;
 }

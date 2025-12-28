@@ -1,10 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Status } from '@prisma/client';
+import { BatchStatus, Status } from '@prisma/client';
 import { PrismaDatabaseService } from '../prisma-database/prisma-database.service';
-import {
-  CreateShipmentDto,
-  UpdateShipmentLocationDto,
-} from './dto/shipment.dto';
+import { CreateShipmentDto } from './dto/shipment.dto';
+import { generateTrackingId } from 'src/common/utils/tracking.utils';
 
 @Injectable()
 export class ShipmentService {
@@ -38,11 +36,18 @@ export class ShipmentService {
         description: dto.description,
 
         currentStatus: Status.PENDING,
+        trackingNumber: batch.flightNumber
+          ? generateTrackingId({ flightNumber: batch.flightNumber })
+          : null,
 
         statusLogs: {
           create: {
-            status: Status.PENDING,
-            message: 'Shipment received and awaiting flight assignment',
+            status: batch.flightNumber
+              ? BatchStatus.READY
+              : BatchStatus.PENDING,
+            message: batch.flightNumber
+              ? 'Shipment ready for delivery'
+              : 'Shipment received and awaiting flight assignment',
           },
         },
       },
@@ -68,7 +73,7 @@ export class ShipmentService {
       },
     });
 
-    if (!shipment) {
+    if (!shipment || !shipment.batch) {
       throw new NotFoundException('Shipment not found');
     }
 
@@ -85,22 +90,6 @@ export class ShipmentService {
         statusLogs: true,
       },
       orderBy: { createdAt: 'desc' },
-    });
-  }
-
-  /**
-   * Update shipment location (used later for map tracking)
-   */
-  async updateShipmentLocation(
-    shipmentId: string,
-    dto: UpdateShipmentLocationDto,
-  ) {
-    return this.prisma.shipment.update({
-      where: { id: shipmentId },
-      data: {
-        currentLat: dto.lat,
-        currentLng: dto.lng,
-      },
     });
   }
 }

@@ -19,8 +19,13 @@ model User {
 model Batch {
   id              String     @id @default(uuid())
   batchCode       String     @unique
-  flightNumber    String?
-  batchName       String
+  batchName     String   @unique
+
+  flightNumber  String?  // Assigned after airline confirmation
+  airline       String?
+
+  currentLat    Float?
+  currentLng    Float?
   status          BatchStatus @default(PENDING)
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
@@ -44,9 +49,6 @@ model Shipment {
 
   trackingNumber String?  @unique
   currentStatus  Status   @default(PENDING)
-
-  currentLat     Float?
-  currentLng     Float?
 
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

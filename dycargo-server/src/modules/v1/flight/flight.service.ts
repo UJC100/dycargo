@@ -2,25 +2,54 @@ import { Injectable, Logger } from '@nestjs/common';
 import axios, { AxiosResponse } from 'axios';
 import { AviationstackResponse } from './interface/flights.interface';
 
+const mockFlights = new Map<
+  string,
+  {
+    startTime: number;
+    durationMs: number;
+  }
+>();
+
 @Injectable()
 export class FlightService {
   private readonly logger = new Logger(FlightService.name);
 
   async getFlightPosition(flightNumber: string) {
     if (process.env.FLIGHT_MODE === 'mock') {
-      // Base coordinates (Manila)
-      const baseLat = 14.5995;
-      const baseLng = 120.9844;
+      const ORIGIN = { lat: 14.5995, lng: 120.9844 }; // Manila
+      const DESTINATION = { lat: 6.5244, lng: 3.3792 }; // Lagos
 
-      // Generate small random offset to simulate movement
-      const offset = () => (Math.random() - 0.5) * 0.01; // +/- 0.005 degrees
+      const TOTAL_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours
+
+      // Initialize flight if not exists
+      if (!mockFlights.has(flightNumber)) {
+        mockFlights.set('QTR-9999', {
+          startTime: Date.now(),
+          durationMs: TOTAL_DURATION_MS,
+        });
+      }
+
+      const flight = mockFlights.get('QTR-9999')!;
+      const elapsed = Date.now() - flight.startTime;
+
+      // Progress from 0 → 1
+      const progress = Math.min(elapsed / flight.durationMs, 5);
+
+      // Linear interpolation
+      const latitude = ORIGIN.lat + (DESTINATION.lat - ORIGIN.lat) * progress;
+      const longitude = ORIGIN.lng + (DESTINATION.lng - ORIGIN.lng) * progress;
+
+      const altitude =
+        progress < 0.95
+          ? 35000
+          : Math.max(0, 35000 * (1 - (progress - 0.95) / 0.05));
 
       return {
-        latitude: baseLat + offset(),
-        longitude: baseLng + offset(),
-        altitude: 35000 + Math.floor(Math.random() * 500), // +/- 500 feet
-        speed: 800 + Math.floor(Math.random() * 20), // +/- 20 km/h
-        status: 'active',
+        latitude,
+        longitude,
+        altitude: Math.round(altitude),
+        speed: 820,
+        status: progress >= 1 ? 'landed' : 'active',
       };
     } else {
       try {

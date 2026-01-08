@@ -1,8 +1,10 @@
 import { TrackingItem } from "@/types/trackingItem.types";
 import { TrackingList } from "./TrackingList";
 import { TrackingSearch } from "./TrackingSearch";
+import { TrackingEvent } from "@/types/trackingEvent";
 
 type TrackingSidebarProps = {
+  trackingEvent: TrackingEvent[];
   trackingResults: TrackingItem[];
   activeTrackingId: string | null;
   onSearchResult: (results: TrackingItem[]) => void;
@@ -11,18 +13,20 @@ type TrackingSidebarProps = {
 
 
 export default function TrackingSidebar({
+  trackingEvent,
   trackingResults,
   activeTrackingId,
   onSearchResult,
   onSelectTracking,
 }: TrackingSidebarProps) {
   return (
-    <aside className="w-full rounded-lg border-r bg-white flex flex-col">
+    <aside className="w-full rounded-lg border bg-white flex flex-col space-y-2 p-3">
       <div className="p-4 border-b">
         <TrackingSearch onSearchResult={onSearchResult} />
       </div>
 
       <TrackingList
+        trackingEvent={trackingEvent}
         results={trackingResults}
         activeTrackingId={activeTrackingId}
         onSelect={onSelectTracking}

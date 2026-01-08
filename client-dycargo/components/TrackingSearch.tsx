@@ -31,6 +31,7 @@ export function TrackingSearch({ onSearchResult }: TrackingSearchProps) {
         placeholder="Enter tracking ID"
         value={value}
         onChange={(e) => setValue(e.target.value)}
+        className="text-black"
       />
 
       <Button

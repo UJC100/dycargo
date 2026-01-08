@@ -1,6 +1,6 @@
 export type TrackingItem = {
   id: string;
-  status: "pending" | "in_transit" | "delivered";
+  status: "Pending" | "In Transit" | "delivered";
   origin?: string;
   destination?: string;
   lastUpdatedAt?: string;

@@ -5,10 +5,60 @@ import StatCard from "../StatCard";
 import { useState } from "react";
 import TrackingSidebar from "../TrackingSidebar";
 import { TrackingItem } from "@/types/trackingItem.types";
+import { TrackingEvent } from "@/types/trackingEvent";
+
+export const mockTrackingResults: TrackingItem[] = [
+  {
+    id: '1',
+    trackingCode: "QTR-9999",
+    origin: "Manila, PH",
+    destination: "Doha, QA",
+    status: "Pending",
+    lastUpdatedAt: "2 mins ago",
+  },
+  {
+    id: '2',
+    trackingCode: "AFR-2041",
+    origin: "Paris, FR",
+    destination: "Lagos, NG",
+    status: "In Transit",
+    lastUpdatedAt: "18 mins ago",
+  },
+]
+
+const mockTrackingEvents: TrackingEvent[] = [
+  {
+    id: "evt-1",
+    date: "23 Nov 2023, 09:13",
+    title: "Package has been picked up",
+    location: "Frauengrabengasse, Nuremberg",
+  },
+  {
+    id: "evt-2",
+    date: "23 Nov 2023, 10:17",
+    title: "Package in transit",
+    location: "Würzburg, Ludwigsbrücke",
+  },
+  {
+    id: "evt-3",
+    date: "23 Nov 2023, 10:42",
+    title: "Package in transit",
+    location: "Schlossgasse, Aschaffenburg",
+  },
+  {
+    id: "evt-4",
+    date: "23 Nov 2023, 11:20",
+    title: "Package is in transit to its final destination",
+    location: "Zeil, Frankfurt",
+    isCurrent: true,
+  },
+]
+
 
 const DashboardClient = () => {
-  const [trackingResults, setTrackingResults] = useState<TrackingItem[]>([]);
-  const [activeTrackingId, setActiveTrackingId] = useState<string | null>(null);
+  const [trackingResults, setTrackingResults] = useState<TrackingItem[]>(mockTrackingResults);
+  const [trackingEvent, setTrackingEvent] = useState<TrackingEvent[]>(mockTrackingEvents);
+  const [activeTrackingId, setActiveTrackingId] = useState<string | null>(mockTrackingResults[0].trackingCode);
   const [livePosition, setLivePosition] = useState<{
     lat: number;
     lng: number;
@@ -29,6 +79,7 @@ const DashboardClient = () => {
       <div className="bg-primary-foreground p-4 rounded-lg grid grid-cols-6 text-white gap-4 border">
         <div className="bg-secondary-foreground rounded-lg col-span-2 flex items-center justify-center">
           <TrackingSidebar
+          trackingEvent={trackingEvent}
             trackingResults={trackingResults}
             activeTrackingId={activeTrackingId}
             onSearchResult={(data) =>

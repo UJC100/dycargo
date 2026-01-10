@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Cron, Interval } from '@nestjs/schedule';
 import { BatchService } from '../batch/batch.service';
 
 @Injectable()
@@ -10,6 +10,7 @@ export class FlightTrackingCron {
 
   // Runs every 5 minutes
   @Cron('*/5 * * * *')
+  // @Interval(10000)
   async trackFlights() {
     this.logger.log('Running flight tracking cron');
 

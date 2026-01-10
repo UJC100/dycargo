@@ -19,21 +19,21 @@ export class FlightService {
       const ORIGIN = { lat: 14.5995, lng: 120.9844 }; // Manila
       const DESTINATION = { lat: 6.5244, lng: 3.3792 }; // Lagos
 
-      const TOTAL_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours
+      const TOTAL_DURATION_MS = 60 * 1000; // 6 hours
 
       // Initialize flight if not exists
       if (!mockFlights.has(flightNumber)) {
-        mockFlights.set('QTR-9999', {
+        mockFlights.set(flightNumber, {
           startTime: Date.now(),
           durationMs: TOTAL_DURATION_MS,
         });
       }
 
-      const flight = mockFlights.get('QTR-9999')!;
+      const flight = mockFlights.get(flightNumber)!;
       const elapsed = Date.now() - flight.startTime;
 
       // Progress from 0 → 1
-      const progress = Math.min(elapsed / flight.durationMs, 5);
+      const progress = Math.min(elapsed / flight.durationMs, 1);
 
       // Linear interpolation
       const latitude = ORIGIN.lat + (DESTINATION.lat - ORIGIN.lat) * progress;

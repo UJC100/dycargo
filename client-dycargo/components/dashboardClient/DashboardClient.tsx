@@ -6,6 +6,9 @@ import { TrackingEvent } from "@/types/trackingEvent";
 import Mapview from "../Mapview";
 import { useLiveShipment } from "@/hooks/useLiveTracking";
 import dynamic from "next/dynamic"
+import { LiveTrackingCard } from "../LiveTrackingCard";
+import { ToggleMapview } from "../ToggleMapview";
+import MapcnMapView from "../MapcnMapView";
 
 const TrackingSidebar = dynamic(
   () => import("../TrackingSidebar"),
@@ -51,17 +54,20 @@ const mockTrackingEvents: TrackingEvent[] = [
   },
 ]
 
+type ViewMode = 'map' | 'tracking';
 
 const DashboardClient = () => {
   const [trackingResults, setTrackingResults] = useState<TrackingItem[]>(mockTrackingResults);
   const [trackingEvent, setTrackingEvent] = useState<TrackingEvent[]>(mockTrackingEvents);
   const [activeTrackingId, setActiveTrackingId] = useState<string | null>(mockTrackingResults[0].id);
-  
+  const [viewMode, setViewMode] = useState<ViewMode>('map');
+
   const liveShipment = useLiveShipment(activeTrackingId ?? "")
   const livePosition = liveShipment
   ? { lat: liveShipment.lat, lng: liveShipment.lng }
-  : null
-  // console.log(livePosition)
+  : { lat: 0, lng: 0 };
+
+  console.log(livePosition)
 
 
   return (
@@ -72,7 +78,7 @@ const DashboardClient = () => {
         <div className="bg-secondary-foreground p-4 rounded-lg">sub test 1</div>
         <div className="bg-secondary-foreground p-4 rounded-lg">sub test 2</div>
         <div className="bg-secondary-foreground p-4 rounded-lg lg:col-span-2">
-          sub test 3
+      
         </div>
       </div>
 
@@ -88,9 +94,16 @@ const DashboardClient = () => {
             onSelectTracking={setActiveTrackingId}
           />
         </div>
+       
 
-        <div className="rounded-lg col-span-4 h-[546px]">
-          <Mapview position={livePosition}/>
+        <div className="relative rounded-lg col-span-4 h-[546px] flex items-center justify-center">
+              <ToggleMapview value={viewMode}
+        onChange={setViewMode}/>
+          {viewMode === 'map' ? (
+        <MapcnMapView position={livePosition} />
+      ) : (
+        <LiveTrackingCard />
+      )}
         </div>
       </div>
 

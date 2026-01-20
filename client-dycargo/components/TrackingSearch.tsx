@@ -4,7 +4,7 @@ import { useState } from "react";
 import { TrackingItem } from "@/types/trackingItem.types";
 
 type TrackingSearchProps = {
-  onSearchResult: (results: TrackingItem[]) => void;
+  onSearchResult: (shipment: TrackingItem) => void;
 };
 
 export function TrackingSearch({ onSearchResult }: TrackingSearchProps) {
@@ -16,14 +16,18 @@ export function TrackingSearch({ onSearchResult }: TrackingSearchProps) {
 
     setLoading(true);
     try {
-      const res = await fetch(`/api/track/${value}`);
-      const data = await res.json();
-      onSearchResult(data);
-      setValue("");
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/shipments/track/${value}`
+      )
+      const shipment = await res.json()
+      // console.log(shipment)
+      onSearchResult(shipment)
+      setValue('')
     } finally {
       setLoading(false);
     }
   }
+ 
 
   return (
     <div className="space-y-2">

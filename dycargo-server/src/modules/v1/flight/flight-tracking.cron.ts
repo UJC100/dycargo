@@ -9,8 +9,8 @@ export class FlightTrackingCron {
   constructor(private readonly batchService: BatchService) {}
 
   // Runs every 5 minutes
-  // @Cron('*/5 * * * *')
-  @Interval(10000)
+  @Cron('*/5 * * * *')
+  // @Interval(10000)
   async trackFlights() {
     this.logger.log('Running flight tracking cron');
 

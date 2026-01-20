@@ -62,7 +62,7 @@ export class ShipmentService {
   /**
    * Get shipment by tracking number (public endpoint later)
    */
-  async getShipmentByTracking(trackingNumber: string) {
+  async getShipmentByTrackingId(trackingNumber: string) {
     const shipment = await this.prisma.shipment.findUnique({
       where: { trackingNumber },
       include: {

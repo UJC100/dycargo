@@ -26,7 +26,6 @@ export function TrackingList({
   activeTrackingId,
   onSelect,
 }: TrackingListProps) {
-  
   return (
     <Accordion
   type="single"
@@ -35,34 +34,34 @@ export function TrackingList({
   onValueChange={onSelect}
   className="space-y-3"
 >
-  {results.map((item) => {
+  {results && results.map((item) => {
    
    return  <AccordionItem
-      key={item.trackingCode}
-      value={item.trackingCode}
+      key={item.id}
+      value={item.trackingNumber}
       className="rounded-xl border"
     >
       {/* HEADER */}
-      <AccordionTrigger className="px-4 py-3 hover:no-underline">
+      <AccordionTrigger className="px-3 py-3 hover:no-underline">
         <div className="flex w-full items-center justify-between">
-          <div className="flex items-center gap-3">
-            {/* Truck icon */}
-            <div className="h-10 w-10 rounded-full border flex items-center justify-center bg-black">
+          <div className="flex items-center gap-3 justify-between ">
+            {/* plane icon */}
+            <div className="h-10 w-10 rounded-full border flex items-center justify-center bg-black shrink-0">
               <PlaneTakeoff className='text-amber-500'/>
             </div>
 
             <div className="text-left">
               <p className="text-sm text-muted-foreground">Shipping ID</p>
-              <p className="font-semibold text-black">#{item.trackingCode}</p>
+              <p className="text-[12px] font-semibold text-black">#{item.trackingNumber}</p>
             </div>
           </div>
 
           <Badge  className={cn(
                   "cursor-pointer border py-1 px-3 transition-all",
-                  item.status === "Pending"
+                  item.currentStatus === 'PENDING'
                     ? "border-amber-400  bg-amber-300/30 text-amber-500"
-                    : "border-blue-400  bg-blue-300/30 text-blue-500"
-                )}>{item.status}</Badge>
+                    : item.currentStatus === 'IN_TRANSIT' ?"border-blue-400  bg-blue-300/30 text-blue-500" : "border-green-400  bg-green-300/30 text-green-500"
+                )}>{item.currentStatus.toLocaleLowerCase()}</Badge>
         </div>
       </AccordionTrigger>
 

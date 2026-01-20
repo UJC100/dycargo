@@ -21,7 +21,7 @@ export class ShipmentController {
    */
   @Get('track/:trackingNumber')
   async trackShipment(@Param('trackingNumber') trackingNumber: string) {
-    return this.shipmentService.getShipmentByTracking(trackingNumber);
+    return this.shipmentService.getShipmentByTrackingId(trackingNumber);
   }
 
   /**

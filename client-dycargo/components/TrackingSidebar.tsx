@@ -9,7 +9,7 @@ type TrackingSidebarProps = {
   trackingEvent: TrackingEvent[];
   trackingResults: TrackingItem[];
   activeTrackingId: string | null;
-  onSearchResult: (results: TrackingItem[]) => void;
+  onSearchResult: (shipment: TrackingItem) => void;
   onSelectTracking: (trackingId: string) => void;
 };
 

@@ -87,30 +87,42 @@ export class BatchService {
       return null;
     }
 
-    const updatedbatchLocation = await this.prisma.batch.update({
-      where: { id: batchId },
-      data: {
-        currentLat: flightData.latitude,
-        currentLng: flightData.longitude,
-        status: BatchStatus.IN_TRANSIT,
-      },
+    // Use a Transaction to ensure both the Batch and the History are updated together
+    const updatedBatch = await this.prisma.$transaction(async (tx) => {
+      // 1. Update the main Batch coordinates
+      const batchUpdate = await tx.batch.update({
+        where: { id: batchId },
+        data: {
+          currentLat: flightData.latitude,
+          currentLng: flightData.longitude,
+          status: BatchStatus.IN_TRANSIT,
+        },
+      });
+
+      // 2. Create a history record in BatchLocation
+      await tx.batchLocation.create({
+        data: {
+          batchId: batchId,
+          // Converting coordinates to string for your 'currentLoction' field
+          currentLoction: `${flightData.latitude.toFixed(4)}, ${flightData.longitude.toFixed(4)}`,
+          // Prisma handles DateTime, but your schema uses String for createdAt/updatedAt
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      });
+
+      return batchUpdate;
     });
 
-    if (
-      updatedbatchLocation.currentLat === null ||
-      updatedbatchLocation.currentLng === null
-    ) {
-      return updatedbatchLocation;
-    }
-
+    // 3. Emit the update to the frontend via WebSocket
     this.trackingGateway.emitShipmentUpdate({
       batchId: batchId,
-      lat: updatedbatchLocation.currentLat,
-      lng: updatedbatchLocation.currentLng,
+      lat: updatedBatch.currentLat!,
+      lng: updatedBatch.currentLng!,
       status: BatchStatus.IN_TRANSIT,
     });
 
-    return updatedbatchLocation;
+    return updatedBatch;
   }
 
   async updateAllActiveFlightPositions(): Promise<void> {

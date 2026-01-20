@@ -31,6 +31,7 @@ model Batch {
   updatedAt       DateTime   @updatedAt
 
   shipments       Shipment[]
+  batchLocation BatchLocation[]
 }
 
 model Shipment {
@@ -57,6 +58,16 @@ model Shipment {
 
   @@index([trackingNumber])
   @@index([batchId])
+}
+
+model BatchLocation {
+    id         String   @id @default(uuid())
+    currentLoction   String 
+    createdAt         String
+    updatedAt         String
+
+    batchId       String
+    batch         Batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
 }
 
 

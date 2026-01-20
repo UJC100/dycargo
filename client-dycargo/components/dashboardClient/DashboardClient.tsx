@@ -5,26 +5,24 @@ import { TrackingItem } from "@/types/trackingItem.types";
 import { TrackingEvent } from "@/types/trackingEvent";
 import Mapview from "../Mapview";
 import { useLiveShipment } from "@/hooks/useLiveTracking";
-import dynamic from "next/dynamic"
+import dynamic from "next/dynamic";
 import { LiveTrackingCard } from "../LiveTrackingCard";
 import { ToggleMapview } from "../ToggleMapview";
 import MapcnMapView from "../MapcnMapView";
 
-const TrackingSidebar = dynamic(
-  () => import("../TrackingSidebar"),
-  { ssr: false }
-)
+const TrackingSidebar = dynamic(() => import("../TrackingSidebar"), {
+  ssr: false,
+});
 export const mockTrackingResults: TrackingItem[] = [
   {
-    id: '401905a3-d1b6-4403-9522-700d29bedd42',
+    id: "401905a3-d1b6-4403-9522-700d29bedd42",
     trackingCode: "DYCARGO-QTR-3569-46D299",
     origin: "Manila, PH",
     destination: "Doha, QA",
     status: "Pending",
     lastUpdatedAt: "2 mins ago",
   },
- 
-]
+];
 
 const mockTrackingEvents: TrackingEvent[] = [
   {
@@ -52,23 +50,26 @@ const mockTrackingEvents: TrackingEvent[] = [
     location: "Zeil, Frankfurt",
     isCurrent: true,
   },
-]
+];
 
-type ViewMode = 'map' | 'tracking';
+type ViewMode = "map" | "tracking";
 
 const DashboardClient = () => {
-  const [trackingResults, setTrackingResults] = useState<TrackingItem[]>(mockTrackingResults);
-  const [trackingEvent, setTrackingEvent] = useState<TrackingEvent[]>(mockTrackingEvents);
-  const [activeTrackingId, setActiveTrackingId] = useState<string | null>(mockTrackingResults[0].id);
-  const [viewMode, setViewMode] = useState<ViewMode>('map');
+  const [trackingResults, setTrackingResults] =
+    useState<TrackingItem[]>([]);
+  const [trackingEvent, setTrackingEvent] =
+    useState<TrackingEvent[]>(mockTrackingEvents);
+  const [activeTrackingId, setActiveTrackingId] = useState<string | null>(
+    mockTrackingResults[0].id
+  );
+  const [viewMode, setViewMode] = useState<ViewMode>("map");
 
-  const liveShipment = useLiveShipment(activeTrackingId ?? "")
+  const liveShipment = useLiveShipment(activeTrackingId ?? "");
   const livePosition = liveShipment
-  ? { lat: liveShipment.lat, lng: liveShipment.lng }
-  : { lat: 0, lng: 0 };
+    ? { lat: liveShipment.lat, lng: liveShipment.lng }
+    : { lat: 0, lng: 0 };
 
-  console.log(livePosition)
-
+  console.log(livePosition);
 
   return (
     <main className="grid grid-cols-1 gap-3">
@@ -77,33 +78,34 @@ const DashboardClient = () => {
       <div className="p-4 rounded-lg grid grid-cols-4 text-white gap-4 border">
         <div className="bg-secondary-foreground p-4 rounded-lg">sub test 1</div>
         <div className="bg-secondary-foreground p-4 rounded-lg">sub test 2</div>
-        <div className="bg-secondary-foreground p-4 rounded-lg lg:col-span-2">
-      
-        </div>
+        <div className="bg-secondary-foreground p-4 rounded-lg lg:col-span-2"></div>
       </div>
 
       <div className="bg-primary-foreground p-4 rounded-lg grid grid-cols-6 text-white gap-4 border items-start">
         <div className="bg-secondary-foregroun rounded-lg col-span-2">
           <TrackingSidebar
-          trackingEvent={trackingEvent}
+            trackingEvent={trackingEvent}
             trackingResults={trackingResults}
             activeTrackingId={activeTrackingId}
-            onSearchResult={(data) =>
-              setTrackingResults((prev) => [...prev, ...data])
-            }
+            onSearchResult={(shipment) => {
+              setTrackingResults((prev) => {
+                const exists = prev.some((item) => item.id === shipment.id);
+                return exists ? prev : [shipment, ...prev];
+              });
+
+              setActiveTrackingId(shipment.id);
+            }}
             onSelectTracking={setActiveTrackingId}
           />
         </div>
-       
 
         <div className="relative rounded-lg col-span-4 h-[546px] flex items-center justify-center">
-              <ToggleMapview value={viewMode}
-        onChange={setViewMode}/>
-          {viewMode === 'map' ? (
-        <MapcnMapView position={livePosition} />
-      ) : (
-        <LiveTrackingCard />
-      )}
+          <ToggleMapview value={viewMode} onChange={setViewMode} />
+          {viewMode === "map" ? (
+            <MapcnMapView position={livePosition} />
+          ) : (
+            <LiveTrackingCard />
+          )}
         </div>
       </div>
 
@@ -113,4 +115,3 @@ const DashboardClient = () => {
 };
 
 export default DashboardClient;
-

@@ -1,9 +1,13 @@
+import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsEmail,
   IsLatitude,
   IsLongitude,
+  IsNumber,
   IsOptional,
   IsString,
+  ValidateNested,
 } from 'class-validator';
 
 export class CreateShipmentDto {
@@ -36,6 +40,23 @@ export class CreateShipmentDto {
   @IsString()
   @IsOptional()
   destination?: string;
+
+  @IsArray()
+  @ValidateNested({ each: true }) // Validates each object in the array
+  @Type(() => ShipmentItemDto) // Required for class-transformer to recognize the type
+  shipmentItems: ShipmentItemDto[];
+}
+
+export class ShipmentItemDto {
+  @IsString()
+  name: string;
+
+  @IsNumber()
+  quantity: number;
+
+  @IsOptional()
+  @IsNumber()
+  weightKg?: number;
 }
 
 export class UpdateShipmentLocationDto {

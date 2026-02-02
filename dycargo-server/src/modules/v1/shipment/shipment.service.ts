@@ -9,7 +9,7 @@ export class ShipmentService {
   constructor(private readonly prisma: PrismaDatabaseService) {}
 
   /**
-   * Create a shipment (NO tracking number yet)
+   * Create a shipment WITH cargo items
    */
   async createShipment(dto: CreateShipmentDto) {
     // 1️⃣ Validate batch
@@ -21,7 +21,7 @@ export class ShipmentService {
       throw new NotFoundException('Batch not found');
     }
 
-    // 3️⃣ Create shipment + initial status log
+    // 2️⃣ Create shipment + cargo items + initial status log
     const shipment = await this.prisma.shipment.create({
       data: {
         batchId: dto.batchId,
@@ -33,12 +33,19 @@ export class ShipmentService {
         receiverEmail: dto.receiverEmail,
         receiverPhone: dto.receiverPhone,
 
-        description: dto.description,
-
         currentStatus: Status.PENDING,
+
         trackingNumber: batch.flightNumber
           ? generateTrackingId({ flightNumber: batch.flightNumber })
           : null,
+
+        shipmentItems: {
+          create: dto.shipmentItems.map((item) => ({
+            name: item.name,
+            quantity: item.quantity,
+            weightKg: item.weightKg,
+          })),
+        },
 
         statusLogs: {
           create: {
@@ -53,6 +60,7 @@ export class ShipmentService {
       },
       include: {
         statusLogs: true,
+        shipmentItems: true, // 👈 IMPORTANT
       },
     });
 
@@ -60,7 +68,7 @@ export class ShipmentService {
   }
 
   /**
-   * Get shipment by tracking number (public endpoint later)
+   * Get shipment by tracking number (public endpoint)
    */
   async getShipmentByTrackingId(trackingNumber: string) {
     const shipment = await this.prisma.shipment.findUnique({
@@ -69,6 +77,7 @@ export class ShipmentService {
         statusLogs: {
           orderBy: { createdAt: 'asc' },
         },
+        shipmentItems: true, // 👈 INCLUDE CARGO
         batch: true,
       },
     });
@@ -88,6 +97,7 @@ export class ShipmentService {
       where: { batchId },
       include: {
         statusLogs: true,
+        shipmentItems: true, // 👈 INCLUDE CARGO
       },
       orderBy: { createdAt: 'desc' },
     });

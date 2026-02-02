@@ -15,6 +15,7 @@ type TrackingSidebarProps = {
 
 
 export default function TrackingSidebar({
+  
   trackingEvent,
   trackingResults,
   activeTrackingId,

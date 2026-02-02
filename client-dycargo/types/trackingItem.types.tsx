@@ -51,4 +51,14 @@ export type TrackingItem = {
   // Timestamps
   createdAt: string;
   updatedAt: string;
+
+  // Shipment item
+  shipmentItems: ShipmentItem[];
 };
+
+export interface ShipmentItem {
+  id: string
+  name: string;
+  quantity: number;
+  weightKg?: number;
+}

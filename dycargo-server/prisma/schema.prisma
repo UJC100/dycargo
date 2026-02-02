@@ -55,10 +55,27 @@ model Shipment {
   updatedAt      DateTime @updatedAt
 
   statusLogs     StatusLog[]
+  shipmentItems  ShipmentItem[]
 
   @@index([trackingNumber])
   @@index([batchId])
 }
+
+model ShipmentItem {
+  id          String   @id @default(uuid())
+
+  shipmentId  String
+  shipment    Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+
+  name        String
+  quantity    Int
+  weightKg    Float?
+
+  createdAt   DateTime @default(now())
+
+  @@index([shipmentId])
+}
+
 
 model BatchLocation {
     id         String   @id @default(uuid())

@@ -95,7 +95,10 @@ export class BatchService {
         data: {
           currentLat: flightData.latitude,
           currentLng: flightData.longitude,
-          status: BatchStatus.IN_TRANSIT,
+          status:
+            flightData.status === 'landed'
+              ? BatchStatus.DELIVERED
+              : BatchStatus.IN_TRANSIT,
         },
       });
 
@@ -121,6 +124,7 @@ export class BatchService {
       lng: updatedBatch.currentLng!,
       status: BatchStatus.IN_TRANSIT,
     });
+    this.logger.log(`Batch ${batchId} has landed. Tracking stopped.`);
 
     return updatedBatch;
   }

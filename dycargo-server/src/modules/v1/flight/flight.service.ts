@@ -44,6 +44,10 @@ export class FlightService {
           ? 35000
           : Math.max(0, 35000 * (1 - (progress - 0.95) / 0.05));
 
+          if(progress >= 1) {
+            
+          }
+
       return {
         latitude,
         longitude,
@@ -58,7 +62,7 @@ export class FlightService {
           {
             params: {
               access_key: process.env.FLIGHT_API_KEY,
-              flight_iata: flightNumber,
+              flight_data: flightNumber,
             },
           },
         );

@@ -44,6 +44,12 @@ export default function MapcnMapView({ position }: TrackingMapProps) {
     prevPositionRef.current = position;
   }, [position]);
 
+  
+  
+useEffect(() => {
+  console.log('📍 Map position update:', position)
+}, [position])
+
   return (
     <div className="h-full w-full">
       <Map zoom={2}>
